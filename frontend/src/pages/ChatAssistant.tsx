@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { modelApi, type ChatMessage } from '../api/client'
+import { modelApi, type ChatMessage, type LLMStatus } from '../api/client'
 import { MessageCircle, Send, Bot, User, Loader2, AlertCircle } from 'lucide-react'
 
 const SUGGESTIONS = [
@@ -20,13 +20,13 @@ export default function ChatAssistant() {
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const { data: llmStatus } = useQuery({
+  const { data: llmStatus } = useQuery<LLMStatus>({
     queryKey: ['llm-status'],
     queryFn: modelApi.llmStatus,
     refetchInterval: 5000,
   })
 
-  const { data: messages = [], isLoading } = useQuery({
+  const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
     queryKey: ['chat', projectId],
     queryFn: () => modelApi.getChat(projectId!),
   })
@@ -56,7 +56,6 @@ export default function ChatAssistant() {
 
   return (
     <div className="max-w-3xl mx-auto flex flex-col h-[calc(100vh-120px)] p-6 gap-4">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <MessageCircle className="w-8 h-8 text-indigo-600" />
         <div>
@@ -71,24 +70,21 @@ export default function ChatAssistant() {
         )}
       </div>
 
-      {!llmStatus?.loaded && (
+      {llmStatus && !llmStatus.loaded && (
         <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700">
           <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-          <span>LLM is not loaded. Responses will use a fallback message. Go to <strong>LLM Setup</strong> to load a model for intelligent answers.</span>
+          <span>LLM is not loaded. Go to <strong>LLM Setup</strong> to load a model for intelligent answers.</span>
         </div>
       )}
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-4 pr-1">
-        {isLoading && (
-          <div className="text-center py-8 text-gray-400">Loading conversation…</div>
-        )}
+        {isLoading && <div className="text-center py-8 text-gray-400">Loading conversation…</div>}
 
         {!isLoading && messages.length === 0 && (
           <div className="space-y-4 py-4">
             <p className="text-center text-gray-500 text-sm">No messages yet. Try one of these:</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {SUGGESTIONS.map(s => (
+              {SUGGESTIONS.map((s: string) => (
                 <button
                   key={s}
                   onClick={() => { setInput(s); textareaRef.current?.focus() }}
@@ -139,7 +135,6 @@ export default function ChatAssistant() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
       <div className="flex gap-2 items-end border border-gray-300 rounded-xl p-2 bg-white shadow-sm focus-within:border-indigo-400 focus-within:ring-1 focus-within:ring-indigo-400">
         <textarea
           ref={textareaRef}

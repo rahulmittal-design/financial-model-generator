@@ -28,7 +28,7 @@ export default function LLMSetup() {
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchStatus = async () => {
+  const fetchStatus = async (): Promise<LLMStatus | null> => {
     try {
       const s = await modelApi.llmStatus()
       setStatus(s)
@@ -76,7 +76,6 @@ export default function LLMSetup() {
         </div>
       </div>
 
-      {/* Status card */}
       <div className={`rounded-xl border-2 p-5 ${status?.loaded ? 'border-green-400 bg-green-50' : status?.error ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-gray-50'}`}>
         <div className="flex items-center gap-3">
           {status?.loaded ? (
@@ -108,12 +107,14 @@ export default function LLMSetup() {
         </div>
       </div>
 
-      {/* Model selection */}
       {!status?.loaded && (
         <div className="space-y-3">
           <p className="font-medium text-gray-700">Select model to download:</p>
           {MODELS.map(m => (
-            <label key={m.id} className={`flex gap-3 p-4 rounded-lg border-2 cursor-pointer transition-colors ${selectedModel === m.id ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'}`}>
+            <label
+              key={m.id}
+              className={`flex gap-3 p-4 rounded-lg border-2 cursor-pointer transition-colors ${selectedModel === m.id ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'}`}
+            >
               <input
                 type="radio"
                 name="model"
@@ -144,7 +145,6 @@ export default function LLMSetup() {
         </div>
       )}
 
-      {/* Advanced info */}
       <div className="border border-gray-200 rounded-lg overflow-hidden">
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
@@ -155,10 +155,10 @@ export default function LLMSetup() {
         </button>
         {showAdvanced && (
           <div className="px-4 pb-4 text-sm text-gray-600 space-y-2 border-t border-gray-200 pt-3">
-            <p><strong>GPU (CUDA):</strong> Model loads in 4-bit NF4 quantisation via bitsandbytes. Much faster inference.</p>
-            <p><strong>CPU:</strong> Loads in float32. Expect 30–120 seconds per response depending on model size.</p>
+            <p><strong>GPU (CUDA):</strong> 4-bit NF4 quantisation via bitsandbytes. Much faster inference.</p>
+            <p><strong>CPU:</strong> float32. Expect 30–120 seconds per response depending on model size.</p>
             <p><strong>First load:</strong> Downloads model weights from HuggingFace Hub (~1.5–14 GB). Cached locally afterward.</p>
-            <p><strong>Cache location:</strong> <code className="bg-gray-100 px-1 rounded">backend/llm_cache/</code></p>
+            <p><strong>Cache:</strong> <code className="bg-gray-100 px-1 rounded">backend/llm_cache/</code></p>
             <p><strong>Dependencies:</strong> torch, transformers, accelerate, bitsandbytes</p>
           </div>
         )}

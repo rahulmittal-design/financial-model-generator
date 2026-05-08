@@ -8,7 +8,7 @@ import {
 } from 'recharts'
 import { TrendingUp, RefreshCw, Download, Sparkles } from 'lucide-react'
 
-const fmt = (v: number | null | undefined) =>
+const fmt = (v: number | null | undefined): string =>
   v == null ? '—' : v >= 1e9 ? `${(v / 1e9).toFixed(2)}B` : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v.toFixed(1)
 
 const KEY_ITEMS = ['revenue', 'gross_profit', 'operating_income', 'net_income', 'ebitda', 'free_cash_flow']
@@ -39,7 +39,7 @@ export default function ForecastView() {
 
   const exportMut = useMutation({
     mutationFn: () => modelApi.exportExcel(projectId!, true),
-    onSuccess: (blob) => {
+    onSuccess: (blob: Blob) => {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -49,18 +49,16 @@ export default function ForecastView() {
     },
   })
 
-  // Build combined chart data (historical + forecast)
   const histPeriods = model?.income_statement.periods ?? []
   const fcPeriods = forecast?.forecast_periods ?? []
   const allPeriods = [...new Set([...histPeriods, ...fcPeriods])].sort()
   const lastHistPeriod = histPeriods[histPeriods.length - 1]
 
-  const chartData = allPeriods.map(p => {
-    const obj: Record<string, number | null | string> = { period: p }
-    KEY_ITEMS.forEach(sid => {
-      // Try historical model first
-      const histRow = model?.income_statement.rows.find(r => r.standard_id === sid)
-        ?? model?.cash_flow.rows.find(r => r.standard_id === sid)
+  const chartData = allPeriods.map((p: string) => {
+    const obj: Record<string, string | number | null> = { period: p }
+    KEY_ITEMS.forEach((sid: string) => {
+      const histRow = model?.income_statement.rows.find((r) => r.standard_id === sid)
+        ?? model?.cash_flow.rows.find((r) => r.standard_id === sid)
       if (histRow?.values[p] != null) {
         obj[sid] = histRow.values[p]
       } else if (forecast?.forecast[sid]?.[p] != null) {
@@ -72,11 +70,12 @@ export default function ForecastView() {
     return obj
   })
 
-  const getAssumption = (sid: string) => {
+  const getAssumption = (sid: string): string | null => {
     const a = forecast?.assumptions?.[sid]
     if (!a) return null
     if (typeof a === 'string') return a
-    return `${((a as { growth_rate: number }).growth_rate * 100).toFixed(1)}% growth — ${(a as { rationale: string }).rationale}`
+    const typed = a as { growth_rate: number; rationale: string }
+    return `${(typed.growth_rate * 100).toFixed(1)}% growth — ${typed.rationale}`
   }
 
   return (
@@ -128,7 +127,7 @@ export default function ForecastView() {
 
       {runMut.isError && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
-          {runMut.error?.message}
+          {(runMut.error as Error)?.message}
         </div>
       )}
 
@@ -141,7 +140,6 @@ export default function ForecastView() {
 
       {forecast && (
         <>
-          {/* Chart */}
           <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-3">
             <h3 className="font-semibold text-gray-800">Key Metrics — Historical + Forecast</h3>
             <div className="h-64">
@@ -149,7 +147,7 @@ export default function ForecastView() {
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="period" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} tickFormatter={v => fmt(v)} />
+                  <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => fmt(v)} />
                   <Tooltip formatter={(v: number) => fmt(v)} />
                   <Legend />
                   {lastHistPeriod && (
@@ -160,7 +158,7 @@ export default function ForecastView() {
                       label={{ value: 'Forecast →', position: 'top', fontSize: 11 }}
                     />
                   )}
-                  {KEY_ITEMS.map((sid, i) => (
+                  {KEY_ITEMS.map((sid: string, i: number) => (
                     <Line
                       key={sid}
                       type="monotone"
@@ -177,11 +175,10 @@ export default function ForecastView() {
             </div>
           </div>
 
-          {/* Assumptions */}
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <h3 className="font-semibold text-gray-800 mb-3">Forecast Assumptions</h3>
             <div className="space-y-2">
-              {KEY_ITEMS.map(sid => {
+              {KEY_ITEMS.map((sid: string) => {
                 const assumption = getAssumption(sid)
                 if (!assumption) return null
                 return (
@@ -194,7 +191,6 @@ export default function ForecastView() {
             </div>
           </div>
 
-          {/* Forecast table */}
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div className="px-5 py-3 border-b border-gray-100">
               <h3 className="font-semibold text-gray-800">Forecast Values</h3>
@@ -204,19 +200,21 @@ export default function ForecastView() {
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-2 font-medium text-gray-600 pr-4 min-w-[200px]">Line Item</th>
-                    {fcPeriods.map(p => (
+                    {fcPeriods.map((p: string) => (
                       <th key={p} className="text-right py-2 px-3 font-medium text-green-700 whitespace-nowrap">{p}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {KEY_ITEMS.map(sid => {
+                  {KEY_ITEMS.map((sid: string) => {
                     const vals = forecast.forecast[sid]
                     if (!vals) return null
                     return (
                       <tr key={sid} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-1.5 pr-4 text-gray-700">{sid.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</td>
-                        {fcPeriods.map(p => (
+                        <td className="py-1.5 pr-4 text-gray-700">
+                          {sid.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}
+                        </td>
+                        {fcPeriods.map((p: string) => (
                           <td key={p} className="py-1.5 px-3 text-right tabular-nums text-green-700">
                             {fmt(vals[p])}
                           </td>

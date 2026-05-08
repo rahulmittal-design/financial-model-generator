@@ -7,20 +7,20 @@ import {
 } from 'recharts'
 import { BarChart2, RefreshCw, Download, ChevronDown, ChevronUp, Sparkles } from 'lucide-react'
 
-const fmt = (v: number | null | undefined) =>
+const fmt = (v: number | null | undefined): string =>
   v == null ? '—' : v >= 1e9 ? `${(v / 1e9).toFixed(1)}B` : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v.toFixed(1)
 
 function StatementSection({ table }: { table: StatementTable }) {
   const [collapsed, setCollapsed] = useState(false)
 
-  const chartData = table.periods.map(p => {
-    const obj: Record<string, unknown> = { period: p }
-    table.rows.filter(r => r.is_derived).forEach(r => {
-      obj[r.standard_label] = r.values[p] ?? 0
-    })
+  const chartData = table.periods.map((p: string) => {
+    const obj: Record<string, string | number> = { period: p }
+    table.rows
+      .filter((r) => r.is_derived)
+      .forEach((r) => { obj[r.standard_label] = r.values[p] ?? 0 })
     return obj
   })
-  const derivedKeys = table.rows.filter(r => r.is_derived).map(r => r.standard_label).slice(0, 5)
+  const derivedKeys = table.rows.filter((r) => r.is_derived).map((r) => r.standard_label).slice(0, 5)
   const COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626']
 
   return (
@@ -37,17 +37,16 @@ function StatementSection({ table }: { table: StatementTable }) {
 
       {!collapsed && (
         <div className="px-5 pb-5 space-y-4">
-          {/* Chart for key derived items */}
           {derivedKeys.length > 0 && (
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="period" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} tickFormatter={v => fmt(v)} />
+                  <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => fmt(v)} />
                   <Tooltip formatter={(v: number) => fmt(v)} />
                   <Legend />
-                  {derivedKeys.map((k, i) => (
+                  {derivedKeys.map((k: string, i: number) => (
                     <Bar key={k} dataKey={k} fill={COLORS[i % COLORS.length]} radius={[3, 3, 0, 0]} />
                   ))}
                 </BarChart>
@@ -55,19 +54,18 @@ function StatementSection({ table }: { table: StatementTable }) {
             </div>
           )}
 
-          {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-2 font-medium text-gray-600 pr-4 min-w-[200px]">Line Item</th>
-                  {table.periods.map(p => (
+                  {table.periods.map((p: string) => (
                     <th key={p} className="text-right py-2 font-medium text-gray-600 px-3 whitespace-nowrap">{p}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {table.rows.map(row => (
+                {table.rows.map((row) => (
                   <tr
                     key={row.standard_id}
                     className={`border-b border-gray-100 ${row.is_derived ? 'bg-blue-50 font-semibold' : 'hover:bg-gray-50'}`}
@@ -78,7 +76,7 @@ function StatementSection({ table }: { table: StatementTable }) {
                         <span className="ml-1 text-xs text-indigo-500">✦ LLM</span>
                       )}
                     </td>
-                    {table.periods.map(p => (
+                    {table.periods.map((p: string) => (
                       <td key={p} className="py-1.5 px-3 text-right text-gray-700 tabular-nums">
                         {fmt(row.values[p])}
                       </td>
@@ -117,7 +115,7 @@ function RatiosSection({ ratios, periods }: { ratios: FinancialModel['key_ratios
           <thead>
             <tr className="border-b border-gray-200">
               <th className="text-left py-2 font-medium text-gray-600 pr-4 min-w-[200px]">Ratio</th>
-              {periods.map(p => (
+              {periods.map((p: string) => (
                 <th key={p} className="text-right py-2 font-medium text-gray-600 px-3 whitespace-nowrap">{p}</th>
               ))}
             </tr>
@@ -129,7 +127,7 @@ function RatiosSection({ ratios, periods }: { ratios: FinancialModel['key_ratios
               return (
                 <tr key={key} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="py-1.5 pr-4 text-gray-700">{label}</td>
-                  {periods.map(p => (
+                  {periods.map((p: string) => (
                     <td key={p} className="py-1.5 px-3 text-right tabular-nums text-gray-700">
                       {row[p] != null ? row[p]!.toFixed(1) : '—'}
                     </td>
@@ -162,7 +160,7 @@ export default function ModelBuilder() {
 
   const exportMut = useMutation({
     mutationFn: () => modelApi.exportExcel(projectId!),
-    onSuccess: (blob) => {
+    onSuccess: (blob: Blob) => {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -186,12 +184,7 @@ export default function ModelBuilder() {
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={useLlm}
-              onChange={e => setUseLlm(e.target.checked)}
-              className="rounded"
-            />
+            <input type="checkbox" checked={useLlm} onChange={e => setUseLlm(e.target.checked)} className="rounded" />
             <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
             Use LLM enhancement
           </label>
@@ -218,25 +211,17 @@ export default function ModelBuilder() {
 
       {buildMut.isError && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
-          {buildMut.error?.message}
+          {(buildMut.error as Error)?.message}
         </div>
       )}
 
-      {isLoading && (
-        <div className="text-center py-20 text-gray-400">Loading model…</div>
-      )}
+      {isLoading && <div className="text-center py-20 text-gray-400">Loading model…</div>}
 
       {!isLoading && !model && !error && (
         <div className="text-center py-20 space-y-3">
           <BarChart2 className="w-12 h-12 text-gray-300 mx-auto" />
           <p className="text-gray-500">No model built yet.</p>
-          <p className="text-sm text-gray-400">Click "Build Model" to assemble the 3-statement model from your approved line items.</p>
-        </div>
-      )}
-
-      {error && !buildMut.isPending && (
-        <div className="text-center py-12 space-y-3">
-          <p className="text-gray-500">No model found. Build it first.</p>
+          <p className="text-sm text-gray-400">Click "Build Model" to assemble the 3-statement model from approved line items.</p>
         </div>
       )}
 

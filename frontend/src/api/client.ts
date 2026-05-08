@@ -72,3 +72,81 @@ export const mappingApi = {
   bulkApprove: (projectId: string) =>
     api.post<{ message: string }>(`/api/projects/${projectId}/line-items/bulk-approve`).then(r => r.data),
 }
+
+// ── Model / Forecast / Chat / LLM ─────────────────────────────────────────────
+
+export interface StatementRow {
+  standard_id: string
+  standard_label: string
+  values: Record<string, number | null>
+  is_derived: boolean
+  source: string
+}
+
+export interface StatementTable {
+  statement_type: string
+  periods: string[]
+  rows: StatementRow[]
+}
+
+export interface FinancialModel {
+  project_id: string
+  income_statement: StatementTable
+  balance_sheet: StatementTable
+  cash_flow: StatementTable
+  key_ratios: Record<string, Record<string, number | null>>
+}
+
+export interface ForecastData {
+  project_id: string
+  forecast_periods: string[]
+  historical_periods?: string[]
+  forecast: Record<string, Record<string, number | null>>
+  assumptions: Record<string, string | { growth_rate: number; rationale: string }>
+}
+
+export interface ChatMessage {
+  id: string
+  project_id: string
+  role: 'user' | 'assistant'
+  content: string
+  created_at: string
+}
+
+export interface LLMStatus {
+  loaded: boolean
+  model_name: string | null
+  device: string | null
+  quantized: boolean
+  error: string | null
+}
+
+export const modelApi = {
+  buildModel: (projectId: string, useLlm = true) =>
+    api.post<FinancialModel>(`/api/model/${projectId}/build`, { project_id: projectId, use_llm: useLlm }).then(r => r.data),
+  getModel: (projectId: string) =>
+    api.get<FinancialModel>(`/api/model/${projectId}`).then(r => r.data),
+  runForecast: (projectId: string, forecastYears = 3, useLlm = true) =>
+    api.post<ForecastData>(`/api/model/${projectId}/forecast`, {
+      project_id: projectId,
+      forecast_years: forecastYears,
+      use_llm: useLlm,
+    }).then(r => r.data),
+  getForecast: (projectId: string) =>
+    api.get<ForecastData>(`/api/model/${projectId}/forecast`).then(r => r.data),
+  exportExcel: (projectId: string, includeForecast = true) =>
+    api.get<Blob>(`/api/model/${projectId}/export`, {
+      params: { include_forecast: includeForecast },
+      responseType: 'blob',
+    }).then(r => r.data),
+  llmStatus: () =>
+    api.get<LLMStatus>('/api/model/llm/status').then(r => r.data),
+  llmLoad: (modelName?: string) =>
+    api.post<{ message: string }>('/api/model/llm/load', null, {
+      params: modelName ? { model_name: modelName } : {},
+    }).then(r => r.data),
+  getChat: (projectId: string) =>
+    api.get<ChatMessage[]>(`/api/model/${projectId}/chat`).then(r => r.data),
+  sendChat: (projectId: string, content: string) =>
+    api.post<ChatMessage>(`/api/model/${projectId}/chat`, { content }).then(r => r.data),
+}
