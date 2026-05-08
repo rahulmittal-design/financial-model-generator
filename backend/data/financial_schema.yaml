@@ -1,0 +1,621 @@
+income_statement:
+  - id: IS_REVENUE
+    label: Revenue
+    aliases:
+      - revenue
+      - net revenue
+      - total revenue
+      - sales
+      - net sales
+      - revenue from operations
+      - revenue from contracts with customers
+      - turnover
+      - total turnover
+      - income from operations
+    sign: positive
+    is_calculated: false
+
+  - id: IS_COGS
+    label: Cost of Goods Sold
+    aliases:
+      - cost of goods sold
+      - cost of sales
+      - cost of revenue
+      - direct costs
+      - cost of products sold
+      - cogs
+    sign: negative
+    is_calculated: false
+
+  - id: IS_GROSS_PROFIT
+    label: Gross Profit
+    aliases:
+      - gross profit
+      - gross margin
+      - gross income
+    sign: positive
+    is_calculated: true
+    formula: IS_REVENUE - IS_COGS
+
+  - id: IS_OPEX
+    label: Operating Expenses
+    aliases:
+      - operating expenses
+      - selling general and administrative
+      - sg&a
+      - sga
+      - selling and distribution expenses
+      - general and administrative expenses
+      - administrative expenses
+      - employee benefit expense
+      - staff costs
+      - operating costs
+    sign: negative
+    is_calculated: false
+
+  - id: IS_RD
+    label: Research & Development
+    aliases:
+      - research and development
+      - r&d
+      - research expenses
+      - development costs
+    sign: negative
+    is_calculated: false
+
+  - id: IS_EBITDA
+    label: EBITDA
+    aliases:
+      - ebitda
+      - earnings before interest tax depreciation amortisation
+    sign: positive
+    is_calculated: true
+    formula: IS_GROSS_PROFIT - IS_OPEX
+
+  - id: IS_DA
+    label: Depreciation & Amortisation
+    aliases:
+      - depreciation and amortisation
+      - depreciation and amortization
+      - depreciation
+      - amortisation
+      - amortization
+      - d&a
+    sign: negative
+    is_calculated: false
+
+  - id: IS_EBIT
+    label: EBIT / Operating Profit
+    aliases:
+      - ebit
+      - operating profit
+      - operating income
+      - profit from operations
+      - income from operations
+      - earnings before interest and tax
+    sign: positive
+    is_calculated: true
+    formula: IS_EBITDA - IS_DA
+
+  - id: IS_INTEREST_INCOME
+    label: Interest Income
+    aliases:
+      - interest income
+      - finance income
+      - investment income
+    sign: positive
+    is_calculated: false
+
+  - id: IS_INTEREST_EXPENSE
+    label: Interest Expense
+    aliases:
+      - interest expense
+      - finance costs
+      - finance charges
+      - interest charges
+      - borrowing costs
+    sign: negative
+    is_calculated: false
+
+  - id: IS_PBT
+    label: Profit Before Tax
+    aliases:
+      - profit before tax
+      - income before tax
+      - earnings before tax
+      - pre-tax income
+      - pbt
+      - ebt
+    sign: positive
+    is_calculated: true
+    formula: IS_EBIT + IS_INTEREST_INCOME - IS_INTEREST_EXPENSE
+
+  - id: IS_TAX
+    label: Tax Expense
+    aliases:
+      - income tax expense
+      - tax expense
+      - current tax
+      - deferred tax
+      - provision for taxation
+    sign: negative
+    is_calculated: false
+
+  - id: IS_NET_INCOME
+    label: Net Income / Profit After Tax
+    aliases:
+      - net income
+      - net profit
+      - profit after tax
+      - pat
+      - net earnings
+      - profit for the year
+      - profit for the period
+      - net profit after tax
+    sign: positive
+    is_calculated: true
+    formula: IS_PBT - IS_TAX
+
+  - id: IS_EPS_BASIC
+    label: Basic EPS
+    aliases:
+      - basic earnings per share
+      - basic eps
+      - earnings per share basic
+    sign: positive
+    is_calculated: false
+
+  - id: IS_EPS_DILUTED
+    label: Diluted EPS
+    aliases:
+      - diluted earnings per share
+      - diluted eps
+      - earnings per share diluted
+    sign: positive
+    is_calculated: false
+
+
+balance_sheet:
+  # Current Assets
+  - id: BS_CASH
+    label: Cash & Cash Equivalents
+    aliases:
+      - cash and cash equivalents
+      - cash
+      - cash and bank balances
+      - cash equivalents
+      - bank balance
+    sign: positive
+    is_calculated: false
+    section: current_assets
+
+  - id: BS_INVESTMENTS_SHORT
+    label: Short-term Investments
+    aliases:
+      - short-term investments
+      - current investments
+      - marketable securities
+      - short term financial assets
+    sign: positive
+    is_calculated: false
+    section: current_assets
+
+  - id: BS_AR
+    label: Accounts Receivable
+    aliases:
+      - accounts receivable
+      - trade receivables
+      - trade and other receivables
+      - debtors
+      - sundry debtors
+      - receivables
+    sign: positive
+    is_calculated: false
+    section: current_assets
+
+  - id: BS_INVENTORY
+    label: Inventories
+    aliases:
+      - inventories
+      - inventory
+      - stock
+      - stocks
+    sign: positive
+    is_calculated: false
+    section: current_assets
+
+  - id: BS_OTHER_CA
+    label: Other Current Assets
+    aliases:
+      - other current assets
+      - prepaid expenses
+      - prepayments
+      - other receivables
+      - advance payments
+    sign: positive
+    is_calculated: false
+    section: current_assets
+
+  - id: BS_TOTAL_CA
+    label: Total Current Assets
+    aliases:
+      - total current assets
+      - current assets
+    sign: positive
+    is_calculated: true
+    section: current_assets
+
+  # Non-Current Assets
+  - id: BS_PPE
+    label: Property Plant & Equipment (Net)
+    aliases:
+      - property plant and equipment
+      - ppe
+      - fixed assets
+      - net block
+      - tangible assets
+      - plant and machinery
+    sign: positive
+    is_calculated: false
+    section: non_current_assets
+
+  - id: BS_INTANGIBLES
+    label: Intangible Assets
+    aliases:
+      - intangible assets
+      - goodwill
+      - goodwill and intangibles
+      - brand value
+    sign: positive
+    is_calculated: false
+    section: non_current_assets
+
+  - id: BS_INVESTMENTS_LONG
+    label: Long-term Investments
+    aliases:
+      - long-term investments
+      - investments
+      - non-current investments
+      - financial assets non-current
+    sign: positive
+    is_calculated: false
+    section: non_current_assets
+
+  - id: BS_OTHER_NCA
+    label: Other Non-Current Assets
+    aliases:
+      - other non-current assets
+      - deferred tax assets
+      - right of use assets
+    sign: positive
+    is_calculated: false
+    section: non_current_assets
+
+  - id: BS_TOTAL_NCA
+    label: Total Non-Current Assets
+    aliases:
+      - total non-current assets
+      - non-current assets
+    sign: positive
+    is_calculated: true
+    section: non_current_assets
+
+  - id: BS_TOTAL_ASSETS
+    label: Total Assets
+    aliases:
+      - total assets
+    sign: positive
+    is_calculated: true
+
+  # Current Liabilities
+  - id: BS_AP
+    label: Accounts Payable
+    aliases:
+      - accounts payable
+      - trade payables
+      - creditors
+      - sundry creditors
+      - trade and other payables
+    sign: positive
+    is_calculated: false
+    section: current_liabilities
+
+  - id: BS_STD
+    label: Short-term Debt
+    aliases:
+      - short-term borrowings
+      - current portion of long-term debt
+      - short term debt
+      - bank overdraft
+      - working capital loans
+    sign: positive
+    is_calculated: false
+    section: current_liabilities
+
+  - id: BS_OTHER_CL
+    label: Other Current Liabilities
+    aliases:
+      - other current liabilities
+      - accrued liabilities
+      - current liabilities
+      - other payables
+    sign: positive
+    is_calculated: false
+    section: current_liabilities
+
+  - id: BS_TOTAL_CL
+    label: Total Current Liabilities
+    aliases:
+      - total current liabilities
+    sign: positive
+    is_calculated: true
+    section: current_liabilities
+
+  # Non-Current Liabilities
+  - id: BS_LTD
+    label: Long-term Debt
+    aliases:
+      - long-term borrowings
+      - long term debt
+      - non-current borrowings
+      - term loans
+      - debentures
+      - bonds
+    sign: positive
+    is_calculated: false
+    section: non_current_liabilities
+
+  - id: BS_OTHER_NCL
+    label: Other Non-Current Liabilities
+    aliases:
+      - other non-current liabilities
+      - deferred tax liabilities
+      - long term provisions
+      - lease liabilities
+    sign: positive
+    is_calculated: false
+    section: non_current_liabilities
+
+  - id: BS_TOTAL_NCL
+    label: Total Non-Current Liabilities
+    aliases:
+      - total non-current liabilities
+      - non-current liabilities
+    sign: positive
+    is_calculated: true
+    section: non_current_liabilities
+
+  - id: BS_TOTAL_LIABILITIES
+    label: Total Liabilities
+    aliases:
+      - total liabilities
+    sign: positive
+    is_calculated: true
+
+  # Equity
+  - id: BS_SHARE_CAPITAL
+    label: Share Capital
+    aliases:
+      - share capital
+      - common stock
+      - equity share capital
+      - issued capital
+      - paid up capital
+    sign: positive
+    is_calculated: false
+    section: equity
+
+  - id: BS_RESERVES
+    label: Reserves & Surplus
+    aliases:
+      - reserves and surplus
+      - retained earnings
+      - other reserves
+      - additional paid in capital
+      - share premium
+      - accumulated profits
+    sign: positive
+    is_calculated: false
+    section: equity
+
+  - id: BS_OTHER_EQUITY
+    label: Other Equity Components
+    aliases:
+      - other comprehensive income
+      - other equity
+      - non-controlling interest
+      - minority interest
+    sign: positive
+    is_calculated: false
+    section: equity
+
+  - id: BS_TOTAL_EQUITY
+    label: Total Equity
+    aliases:
+      - total equity
+      - shareholders equity
+      - stockholders equity
+      - total shareholders funds
+    sign: positive
+    is_calculated: true
+    section: equity
+
+  - id: BS_TOTAL_LE
+    label: Total Liabilities & Equity
+    aliases:
+      - total liabilities and equity
+      - total equity and liabilities
+      - total liabilities and shareholders equity
+    sign: positive
+    is_calculated: true
+
+
+cash_flow:
+  - id: CF_NET_INCOME
+    label: Net Income (CFO start)
+    aliases:
+      - net income
+      - net profit
+      - profit after tax
+    sign: positive
+    is_calculated: false
+    section: operating
+
+  - id: CF_DA_ADDBACK
+    label: Depreciation & Amortisation Add-back
+    aliases:
+      - depreciation and amortisation
+      - depreciation
+      - amortisation
+      - depreciation and amortization
+    sign: positive
+    is_calculated: false
+    section: operating
+
+  - id: CF_CHANGE_WC
+    label: Changes in Working Capital
+    aliases:
+      - changes in working capital
+      - working capital changes
+      - movement in working capital
+      - change in operating assets and liabilities
+    sign: positive
+    is_calculated: false
+    section: operating
+
+  - id: CF_CFO_OTHER
+    label: Other Operating Cash Items
+    aliases:
+      - other operating activities
+      - other adjustments
+      - interest paid
+      - taxes paid
+    sign: positive
+    is_calculated: false
+    section: operating
+
+  - id: CF_TOTAL_CFO
+    label: Net Cash from Operating Activities
+    aliases:
+      - net cash from operating activities
+      - cash from operations
+      - operating cash flow
+      - net cash generated from operations
+    sign: positive
+    is_calculated: true
+    section: operating
+
+  - id: CF_CAPEX
+    label: Capital Expenditure
+    aliases:
+      - capital expenditure
+      - capex
+      - purchase of fixed assets
+      - acquisition of property plant and equipment
+      - purchase of ppe
+      - additions to fixed assets
+    sign: negative
+    is_calculated: false
+    section: investing
+
+  - id: CF_OTHER_INVESTING
+    label: Other Investing Activities
+    aliases:
+      - other investing activities
+      - proceeds from sale of assets
+      - purchase of investments
+      - acquisition of subsidiaries
+    sign: positive
+    is_calculated: false
+    section: investing
+
+  - id: CF_TOTAL_CFI
+    label: Net Cash from Investing Activities
+    aliases:
+      - net cash from investing activities
+      - cash used in investing activities
+      - investing cash flow
+    sign: positive
+    is_calculated: true
+    section: investing
+
+  - id: CF_DEBT_PROCEEDS
+    label: Proceeds from Borrowings
+    aliases:
+      - proceeds from borrowings
+      - proceeds from long-term debt
+      - proceeds from issue of debt
+    sign: positive
+    is_calculated: false
+    section: financing
+
+  - id: CF_DEBT_REPAYMENT
+    label: Repayment of Borrowings
+    aliases:
+      - repayment of borrowings
+      - repayment of debt
+      - repayment of long-term debt
+    sign: negative
+    is_calculated: false
+    section: financing
+
+  - id: CF_DIVIDENDS
+    label: Dividends Paid
+    aliases:
+      - dividends paid
+      - dividend payments
+      - interim dividend
+      - final dividend
+    sign: negative
+    is_calculated: false
+    section: financing
+
+  - id: CF_OTHER_CFF
+    label: Other Financing Activities
+    aliases:
+      - other financing activities
+      - proceeds from issue of shares
+      - share buyback
+      - repurchase of shares
+    sign: positive
+    is_calculated: false
+    section: financing
+
+  - id: CF_TOTAL_CFF
+    label: Net Cash from Financing Activities
+    aliases:
+      - net cash from financing activities
+      - cash used in financing activities
+      - financing cash flow
+    sign: positive
+    is_calculated: true
+    section: financing
+
+  - id: CF_NET_CHANGE
+    label: Net Change in Cash
+    aliases:
+      - net increase in cash
+      - net decrease in cash
+      - net change in cash and cash equivalents
+      - increase in cash
+    sign: positive
+    is_calculated: true
+
+  - id: CF_BEG_CASH
+    label: Beginning Cash Balance
+    aliases:
+      - opening cash balance
+      - cash at beginning of year
+      - cash at start of period
+    sign: positive
+    is_calculated: false
+
+  - id: CF_END_CASH
+    label: Ending Cash Balance
+    aliases:
+      - closing cash balance
+      - cash at end of year
+      - cash at end of period
+      - cash and cash equivalents at end
+    sign: positive
+    is_calculated: false
