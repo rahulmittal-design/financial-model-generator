@@ -1,17 +1,22 @@
+# Core
 fastapi==0.111.0
-uvicorn[standard]==0.29.0
+uvicorn[standard]==0.30.1
 sqlalchemy==2.0.30
 pydantic==2.7.1
 python-multipart==0.0.9
 pyyaml==6.0.1
-aiofiles==23.2.1
 
-# PDF extraction (primary)
+# PDF extraction
 docling==1.16.0
-
-# PDF extraction (fallback)
 pdfplumber==0.11.0
 
-# Optional: for future LLM integration
-# ollama
-# httpx
+# Excel export
+openpyxl==3.1.4
+
+# LLM (HuggingFace)
+torch>=2.2.0
+transformers>=4.41.0
+accelerate>=0.30.0
+bitsandbytes>=0.43.0
+sentencepiece>=0.2.0
+huggingface_hub>=0.23.0

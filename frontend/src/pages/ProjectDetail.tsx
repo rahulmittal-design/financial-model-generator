@@ -5,8 +5,9 @@ import { useDropzone } from 'react-dropzone'
 import {
   ArrowLeft, Upload, FileText, Loader2, AlertCircle,
   CheckCircle2, Zap, Map, ChevronRight, RefreshCw, Trash2,
+  BarChart2, TrendingUp, MessageCircle, Cpu,
 } from 'lucide-react'
-import { projectsApi, documentsApi, mappingApi } from '../api/client'
+import { projectsApi, documentsApi, mappingApi, modelApi } from '../api/client'
 import StatusBadge from '../components/StatusBadge'
 
 export default function ProjectDetail() {
@@ -241,9 +242,4 @@ export default function ProjectDetail() {
             >
               Review Mappings <ChevronRight className="w-3 h-3" />
             </Link>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
+   
